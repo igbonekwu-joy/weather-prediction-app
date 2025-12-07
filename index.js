@@ -7,6 +7,8 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.use(express.static('public'));
+
 app.get('/', (req, res) => {
     res.render('index', { title: 'Weather App' });
 });
@@ -16,7 +18,7 @@ app.get('/check', (req, res) => {
 });
 
 app.post('/check', async (req, res) => {
-    const { city, scale } = req.body;
+    const { city } = req.body;
 
     const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${openWeatherApiKey}&units=metric`;
 
@@ -33,18 +35,22 @@ app.post('/check', async (req, res) => {
 
         res.status(200).json(todaysWeather);
         
-        todaysWeather.map(entry => {
-            console.log("Time:", entry.dt_txt);
-            console.log("Temperature:", entry.main.temp + "°C");
-            console.log("Feels like:", entry.main.feels_like + "°C");
-            console.log("Humidity:", entry.main.humidity + "%");
-            console.log("Weather:", entry.weather[0].description);
-            console.log("Chance of Rain:", entry.pop);
-            console.log("---------------------------");
-        });
+        // todaysWeather.map(entry => {
+        //     console.log("Time:", entry.dt_txt);
+        //     console.log("Temperature:", entry.main.temp + "°C");
+        //     console.log("Feels like:", entry.main.feels_like + "°C");
+        //     console.log("Humidity:", entry.main.humidity + "%");
+        //     console.log("Weather:", entry.weather[0].description);
+        //     console.log("Chance of Rain:", entry.pop);
+        //     console.log("---------------------------");
+        // });
     } catch (err) {
-        console.error("Error fetching weather:", err.response?.data || err.message);
-  }
+        res
+            .status(parseInt(err.response?.data.cod))
+            .json({ 
+                error: err.response?.data.message 
+            });
+    }
 });
 
 app.listen(port, () => {
