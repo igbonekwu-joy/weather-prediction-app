@@ -4,8 +4,27 @@ const { openWeatherApiKey } = require('../config');
 const axios = require('axios');
 
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
     res.render('index', { title: 'Weather App' });
+});
+
+router.post('/', async (req, res) => {
+    const { lat, lon } = req.body;
+
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeatherApiKey}&units=metric`;
+
+    try {
+        const response = await axios.get(url);
+        const data = response.data;
+
+        res.status(200).json(data);
+    } catch (err) {
+        res
+            .status(parseInt(err.response?.data.cod))
+            .json({ 
+                error: err.response?.data.message 
+            });
+    }
 });
 
 router.get('/check', (req, res) => {

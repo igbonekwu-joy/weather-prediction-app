@@ -1,42 +1,86 @@
 <%- include('partials/header') %>
-    <section class="vh-100" style="background-color: #eee;">
-        <div class="container py-5 h-100">
-            <div class="row d-flex justify-content-center align-items-center h-100">
-                <div class="col-md-8 col-lg-6 col-xl-4">
+    <div class="row d-flex justify-content-center py-5">
+        <div class="col-md-8 col-lg-6 col-xl-5">
 
-                    <div class="card" style="border-radius: 10px;">
-                        <div class="bg-image ripple" data-mdb-ripple-color="light"
-                            style="border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-weather/draw2.webp"
-                            class="w-100" />
-                            <div class="mask" style="background-color: rgba(0,0,0,.45)">
-                            <div class="d-flex justify-content-between p-4">
-                                <a href="#!" class="text-white"><i class="fas fa-chevron-left fa-lg"></i></a>
-                                <a href="check" class="text-white"><i class="fas fa-cog fa-lg"></i></a>
-                            </div>
-                            <div class="text-center text-white">
-                                <p class="h3 mb-4">Clear night</p>
-                                <p class="h5 mb-4">Detroit, US</p>
-                                <p class="display-2"><strong>20°C</strong> </p>
-                            </div>
-                            </div>
-                        </div>
-                        <div class="card-body p-4 text-center">
-                            <a href="#!" class="text-body"><i class="fas fa-chevron-up fa-lg mb-4"></i></a>
-                            <div class="d-flex justify-content-between mb-3">
-                            <p class="h5 fw-normal">Yesterday</p>
-                            <p class="h5 fw-normal"><i class="fas fa-sun pe-2"></i> 23°C</p>
-                            </div>
-                            <div class="d-flex justify-content-between" style="color: #aaa;">
-                            <p class="h5 fw-normal">Tommorow</p>
-                            <p class="h5 fw-normal"><i class="fas fa-cloud pe-2"></i> 21°C</p>
-                            </div>
-                        </div>
-                    </div>
+            <div class="card text-body" style=" border-radius: 35px; background: #424242;">
+                <div class="card-body p-4" id="weather_info" style="color: #fff;">
+
+                    <p>Loading...</p>
 
                 </div>
             </div>
+
         </div>
-    </section>
+    </div>
+
+    <script>
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                console.log("Position:", pos.coords);
+                // send location to backend
+                $.post("/", {
+                    lat: pos.coords.latitude,
+                    lon: pos.coords.longitude
+                })
+                .done(function(response) {
+                    console.log("Backend response:", response);
+                    const now = new Date();
+                    const hours = now.getHours();
+                    const minutes = now.getMinutes();
+                    const sunrise = new Date(response.sys.sunrise * 1000);
+                    const sunset = new Date(response.sys.sunset * 1000);
+
+                    //difference in ms
+                    const sunriseDiffMs = sunrise - now;
+                    //difference in hours
+                    const sunriseDiffHrs = Math.floor(Math.abs(sunriseDiffMs) / (1000 * 60 * 60));
+                    
+                    let status = '';
+                    if(sunriseDiffMs < 0) {
+                        status = 'ago';
+                    }
+
+                    $('#weather_info').empty();
+                    
+                    var info = '<div class="d-flex"> ' +
+                        '<h6 class="flex-grow-1">' + response.name + '</h6>' +
+                        '<h6>' + hours + ':' + minutes + '</h6>' +
+                        '</div>' +
+
+                        '<div class="d-flex flex-column text-center mt-5 mb-4">' +
+                            '<h6 class="display-4 mb-0 font-weight-bold"> ' + response.main.temp +'°C</h6>' +
+                            '<span class="small" style="color: #868B94">' + response.weather[0].description + '</span>' +
+                        '</div>' +
+
+                        '<div class="d-flex align-items-center">' +
+                            '<div class="flex-grow-1" style="font-size: 1rem;">' +
+                                '<div> ' +
+                                    '<i class="fas fa-wind fa-fw" style="color: #868B94;"></i> ' +
+                                    '<span class="ms-1"> ' + response.wind.speed + ' km/h (Wind Speed)</span>' +
+                                '</div>' +
+                                '<div>' +
+                                    '<i class="fas fa-tint fa-fw" style="color: #868B94;"></i> ' +
+                                    '<span class="ms-1"> ' + response.main.humidity + '% (Humidity)</span>' +
+                                '</div>' +
+                                '<div>' +
+                                    '<i class="fas fa-sun fa-fw" style="color: #868B94;"></i> ' +
+                                    '<span class="ms-1"> ' + sunriseDiffHrs + 'hr' + ' ' + status + '</span>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div>' +
+                                '<img src="https://openweathermap.org/img/wn/' + response.weather[0].icon + '.png" width="100px">' +
+                            '</div>' +
+                        '</div>';
+                    $('#weather_info').append(info);
+                })
+                .fail(function(xhr) {
+                    console.error("Backend error:", xhr.responseJSON || xhr.responseText);
+                });
+            },
+            (err) => console.error(err),
+            { enableHighAccuracy: true }
+        );
+
+    </script>
 
 <%- include('partials/footer') %>
