@@ -15,7 +15,7 @@ router.post('/', async (req, res) => {
 
     const response = await axios.get(url);
     const data = response.data;
-
+ 
     res.status(200).json(data);
 });
 
