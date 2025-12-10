@@ -21,21 +21,34 @@ $('#weather_form').submit(function(e) {
             if (data.length === 0) {
                 $('.weather_result').append('<p>No weather data available for today.</p>');
             } else {
-                data.forEach(function(entry) {
-                    var weatherInfo = '<div class="weather_entry">' +
-                        '<h4 class="mb-1 sfw-normal"><strong>' + city + '</strong></h4>' +
-                        '<h5>Time: ' + entry.dt_txt + '</h5>' +
-                        '<p>Temperature: <strong>' + entry.main.temp + '°C</strong></p>' +
-                        '<p>Feels like: <strong>' + entry.main.feels_like + '°C</strong></p>' +  
-                        '<p>Humidity: <strong>' + entry.main.humidity + '%</strong></p>' +
-                        '<p>Chance of Rain: <strong>' + (entry.pop * 100) + '%</strong></p>' +
-                        '<div class="d-flex flex-row align-items-center">' +
-                            '<p class="mb-0 me-4">Weather: ' + entry.weather[0].description + '</p>' +
-                            '<i class="fas fa-cloud fa-3x" style="color: #eee;"></i>' +
-                        '</div>'
-                        '<hr></div>';
-                    $('.weather_result').append(weatherInfo);
-                });
+                var weatherInfo = '<div class="weather_entry">' +
+                    '<h4 class="mb-1 sfw-normal"><strong>' + city + '</strong></h4>' +
+                    '<h5>Time: ' + data[0].dt_txt + '</h5>' +
+                    '<p>Temperature: <strong>' + data[0].main.temp + '°C</strong></p>' +
+                    '<p>Feels like: <strong>' + data[0].main.feels_like + '°C</strong></p>' +  
+                    '<p>Humidity: <strong>' + data[0].main.humidity + '%</strong></p>' +
+                    '<p>Chance of Rain: <strong>' + (data[0].pop * 100) + '%</strong></p>' +
+                    '<div class="d-flex flex-row align-items-center">' +
+                        '<p class="mb-0 me-4">Weather: ' + data[0].weather[0].description + '</p>' +
+                        '<i class="fas fa-cloud fa-3x" style="color: #eee;"></i>' +
+                    '</div>'
+                    '<hr></div>';
+                // data.forEach(function(entry) {
+                //     var weatherInfo = '<div class="weather_entry">' +
+                //         '<h4 class="mb-1 sfw-normal"><strong>' + city + '</strong></h4>' +
+                //         '<h5>Time: ' + entry.dt_txt + '</h5>' +
+                //         '<p>Temperature: <strong>' + entry.main.temp + '°C</strong></p>' +
+                //         '<p>Feels like: <strong>' + entry.main.feels_like + '°C</strong></p>' +  
+                //         '<p>Humidity: <strong>' + entry.main.humidity + '%</strong></p>' +
+                //         '<p>Chance of Rain: <strong>' + (entry.pop * 100) + '%</strong></p>' +
+                //         '<div class="d-flex flex-row align-items-center">' +
+                //             '<p class="mb-0 me-4">Weather: ' + entry.weather[0].description + '</p>' +
+                //             '<i class="fas fa-cloud fa-3x" style="color: #eee;"></i>' +
+                //         '</div>'
+                //         '<hr></div>';
+                //     $('.weather_result').append(weatherInfo);
+                // });
+                $('.weather_result').append(weatherInfo);
             }
 
             submitButton.prop('disabled', false);

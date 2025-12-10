@@ -52,4 +52,24 @@ describe('weather route', () => {
             expect(spy).toHaveBeenCalledWith('check', expect.objectContaining({ title: 'Check Weather' }));
         });
     });
+
+    describe('/check POST', () => {
+        it('gets the weather forecast data from the api', async () => {
+            const city = 'London';
+
+            const response = { weather: [{ main: 'Clouds' }], temp: 25 };
+
+            axios.get = jest.fn().mockResolvedValue({ data: response });
+
+            const res = await request(app)
+                .post('/check')
+                .send({ city });
+
+            expect(res.status).toBe(200);
+            expect(res.body).toEqual(response);
+
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeatherApiKey}&units=metric`;
+            expect(axios.get).toHaveBeenCalledWith(url);
+        });
+    });
 });
