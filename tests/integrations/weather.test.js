@@ -56,19 +56,32 @@ describe('weather route', () => {
     describe('/check POST', () => {
         it('gets the weather forecast data from the api', async () => {
             const city = 'London';
+            const today = new Date().toISOString().split("T")[0];
 
-            const response = { weather: [{ main: 'Clouds' }], temp: 25 };
+            const response = { 
+                list: [
+                    // today entries
+                    { dt_txt: `${today} 03:00:00`, temp: 20 },
+                    { dt_txt: `${today} 09:00:00`, temp: 22 },
+
+                    // ... other days
+                    { dt_txt: `2099-12-31 03:00:00`, temp: 25 }
+                ]
+            };
 
             axios.get = jest.fn().mockResolvedValue({ data: response });
 
             const res = await request(app)
                 .post('/check')
-                .send({ city });
+                .send({ city, units: 'metric' });
 
             expect(res.status).toBe(200);
-            expect(res.body).toEqual(response);
+            expect(res.body).toEqual([
+                { dt_txt: `${today} 03:00:00`, temp: 20 },
+                { dt_txt: `${today} 09:00:00`, temp: 22 }
+            ]);
 
-            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeatherApiKey}&units=metric`;
+            const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${openWeatherApiKey}&units=metric`;
             expect(axios.get).toHaveBeenCalledWith(url);
         });
     });
