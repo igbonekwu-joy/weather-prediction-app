@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/check', (req, res) => {
-    res.render('check', { title: 'Check Weather' });
+    res.render('check', { title: 'Check Weather' }); 
 });
 
 router.post('/check', async (req, res) => {

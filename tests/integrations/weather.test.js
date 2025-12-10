@@ -23,7 +23,7 @@ describe('weather route', () => {
     });
     
     describe('/ POST', () => {
-        it('get the weather data from api', async () => {
+        it('gets the weather data from api', async () => {
             const lat =  10;
             const lon = 20;
 
@@ -40,6 +40,16 @@ describe('weather route', () => {
 
             const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeatherApiKey}&units=metric`;
             expect(axios.get).toHaveBeenCalledWith(url);
+        });
+    });
+
+    describe('/check GET', () => {
+        it('should render weather check page with the correct title', async () => {
+            const spy = jest.spyOn(app.response, 'render');
+
+            await request(app).get('/check');
+
+            expect(spy).toHaveBeenCalledWith('check', expect.objectContaining({ title: 'Check Weather' }));
         });
     });
 });
